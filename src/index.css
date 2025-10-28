@@ -1,0 +1,23 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom white background for classy look */
+body {
+  background: #ffffff;
+  min-height: 100vh;
+  color: #333333;
+}
+
+/* Highlight keywords */
+.highlight-green {
+  @apply text-green-400 font-bold;
+}
+
+.highlight-yellow {
+  @apply text-yellow-400 font-bold;
+}
+
+.highlight-cyan {
+  @apply text-cyan-400 font-bold;
+}
