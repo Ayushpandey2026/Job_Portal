@@ -24,7 +24,8 @@ const Register = () => {
       login(response.data.token)
       navigate(formData.role === 'recruiter' ? '/recruiter' : '/applicant')
     } catch (error) {
-      alert('Registration failed')
+      const errorMessage = error.response?.data?.message || 'Registration failed'
+      alert(errorMessage)
     }
   }
 

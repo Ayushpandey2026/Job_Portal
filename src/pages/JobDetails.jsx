@@ -1,41 +1,21 @@
 import React, { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import axios from 'axios'
+import { useAuth } from '../contexts/AuthContext'
 
 const JobDetails = () => {
   const { id } = useParams()
+  const { user, token } = useAuth()
   const [job, setJob] = useState(null)
   const [resume, setResume] = useState(null)
-  const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(true)
   const [applying, setApplying] = useState(false)
   const [applicationSubmitted, setApplicationSubmitted] = useState(false)
 
   useEffect(() => {
     fetchJob()
-    const token = localStorage.getItem('token')
-    if (token) {
-      fetchUserProfile()
-    } else {
-      setLoading(false)
-    }
+    setLoading(false)
   }, [id])
-
-  const fetchUserProfile = async () => {
-    try {
-      const response = await axios.get('http://localhost:5000/api/auth/profile', {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-      })
-      setUser(response.data)
-    } catch (error) {
-      console.error('Error fetching profile:', error)
-      localStorage.removeItem('token')
-      localStorage.removeItem('role')
-      setUser(null)
-    } finally {
-      setLoading(false)
-    }
-  }
 
   const fetchJob = async () => {
     try {
@@ -63,7 +43,7 @@ const JobDetails = () => {
     try {
       await axios.post(`http://localhost:5000/api/jobs/${id}/apply`, formData, {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
+          Authorization: `Bearer ${token}`,
           'Content-Type': 'multipart/form-data'
         }
       })

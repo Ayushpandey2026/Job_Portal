@@ -32,11 +32,14 @@ export const AuthProvider = ({ children }) => {
         setUser(userData)
         setRole(userData.role)
       } else {
-        logout()
+        console.error('Profile fetch failed:', response.status)
+        setUser(null)
+        setRole(null)
       }
     } catch (error) {
       console.error('Error fetching profile:', error)
-      logout()
+      setUser(null)
+      setRole(null)
     }
   }
 

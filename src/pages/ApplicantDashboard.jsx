@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import axios from 'axios'
+import ResumeChecker from '../components/ResumeChecker'
 
 const ApplicantDashboard = () => {
   const [applications, setApplications] = useState([])
@@ -28,7 +29,7 @@ const ApplicantDashboard = () => {
 
   const fetchApplications = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/jobs/my-applications', {
+      const response = await axios.get('http://localhost:5000/api/applications/my-applications', {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       })
       setApplications(response.data)
@@ -169,6 +170,16 @@ const ApplicantDashboard = () => {
               }`}
             >
               🔍 Browse Jobs
+            </button>
+            <button
+              onClick={() => setActiveTab('resume-checker')}
+              className={`px-6 py-3 rounded-lg font-medium transition-all transform hover:scale-105 ${
+                activeTab === 'resume-checker'
+                  ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              📄 Resume Checker
             </button>
           </div>
 
@@ -447,6 +458,13 @@ const ApplicantDashboard = () => {
                   ))
                 )}
               </div>
+            </div>
+          )}
+
+          {/* Resume Checker Tab */}
+          {activeTab === 'resume-checker' && (
+            <div>
+              <ResumeChecker />
             </div>
           )}
         </div>

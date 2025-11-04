@@ -23,7 +23,8 @@ const Login = () => {
       login(response.data.token)
       navigate(formData.role === 'recruiter' ? '/recruiter' : '/applicant')
     } catch (error) {
-      alert('Login failed')
+      const errorMessage = error.response?.data?.message || 'Login failed'
+      alert(errorMessage)
     }
   }
 
