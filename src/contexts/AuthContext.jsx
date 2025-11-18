@@ -14,11 +14,13 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null)
   const [token, setToken] = useState(localStorage.getItem('token') || null)
   const [role, setRole] = useState(localStorage.getItem('role') || null)
+  const [loading, setLoading] = useState(!!token)
 
   useEffect(() => {
     if (token) {
-      // Fetch user profile if token exists
       fetchUserProfile()
+    } else {
+      setLoading(false)
     }
   }, [token])
 
@@ -40,12 +42,19 @@ export const AuthProvider = ({ children }) => {
       console.error('Error fetching profile:', error)
       setUser(null)
       setRole(null)
+    } finally {
+      setLoading(false)
     }
   }
 
-  const login = (authToken) => {
+  const login = (authToken, userData) => {
     setToken(authToken)
     localStorage.setItem('token', authToken)
+    if (userData) {
+      setUser(userData)
+      setRole(userData.role)
+      localStorage.setItem('role', userData.role)
+    }
   }
 
   const logout = () => {
@@ -60,6 +69,7 @@ export const AuthProvider = ({ children }) => {
     user,
     token,
     role,
+    loading,
     login,
     logout
   }
