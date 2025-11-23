@@ -19,7 +19,7 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault()
     try {
-      const response = await axios.post('http://localhost:5000/api/auth/login', formData)
+      const response = await axios.post( `${import.meta.env.VITE_API_URL}/api/auth/login`, formData)
       login(response.data.token, response.data.user)
       navigate(formData.role === 'recruiter' ? '/recruiter' : '/applicant')
     } catch (error) {

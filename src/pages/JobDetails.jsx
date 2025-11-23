@@ -19,7 +19,7 @@ const JobDetails = () => {
 
   const fetchJob = async () => {
     try {
-      const response = await axios.get(`http://localhost:5000/api/jobs/${id}`)
+      const response = await axios.get( `${import.meta.env.VITE_API_URL}/api/jobs/${id}`)
       setJob(response.data)
     } catch (error) {
       console.error('Error fetching job:', error)
@@ -41,7 +41,7 @@ const JobDetails = () => {
     formData.append('resume', resume)
 
     try {
-      await axios.post(`http://localhost:5000/api/jobs/${id}/apply`, formData, {
+      await axios.post( `${import.meta.env.VITE_API_URL}/api/jobs/${id}/apply`, formData, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'multipart/form-data'

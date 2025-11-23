@@ -17,7 +17,7 @@ const ResumeChecker = () => {
 
   const fetchHistory = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/resume/history', {
+      const response = await axios.get( `${import.meta.env.VITE_API_URL}/api/resume/history`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       })
       setHistory(response.data.history)
@@ -68,7 +68,7 @@ const ResumeChecker = () => {
         })
       }, 200)
 
-      const response = await axios.post('http://localhost:5000/api/resume/check', formData, {
+      const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/resume/check`, formData, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
           'Content-Type': 'multipart/form-data'

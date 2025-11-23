@@ -40,7 +40,7 @@ const RecruiterDashboard = () => {
 
   const fetchJobs = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/jobs', {
+      const response = await axios.get( `${import.meta.env.VITE_API_URL}/api/jobs`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       })
       setJobs(response.data)
@@ -52,7 +52,7 @@ const RecruiterDashboard = () => {
   const fetchAllApplications = async () => {
     try {
       const params = filterScore ? { minScore: filterScore } : {}
-      const response = await axios.get('http://localhost:5000/api/jobs/my-applications', {
+      const response = await axios.get( `${import.meta.env.VITE_API_URL}/api/jobs/my-applications`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
         params
       })
@@ -64,7 +64,7 @@ const RecruiterDashboard = () => {
 
   const fetchReceivedApplications = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/jobs/my-applications', {
+      const response = await axios.get( `${import.meta.env.VITE_API_URL}/api/jobs/my-applications`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       })
       setReceivedApplications(response.data)
@@ -75,7 +75,7 @@ const RecruiterDashboard = () => {
 
   const fetchSelectedApplications = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/jobs/my-selected-applications', {
+      const response = await axios.get( `${import.meta.env.VITE_API_URL}/api/jobs/my-selected-applications`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       })
       setSelectedApplications(response.data)
@@ -103,7 +103,7 @@ const RecruiterDashboard = () => {
   const handleSubmit = async (e) => {
     e.preventDefault()
     try {
-      await axios.post('http://localhost:5000/api/jobs', formData, {
+      await axios.post( `${import.meta.env.VITE_API_URL}/api/jobs`, formData, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       })
       setShowCreateForm(false)
@@ -130,7 +130,7 @@ const RecruiterDashboard = () => {
 
   const viewApplications = async (jobId) => {
     try {
-      const response = await axios.get(`http://localhost:5000/api/jobs/${jobId}/applications`, {
+      const response = await axios.get( `${import.meta.env.VITE_API_URL}/api/jobs/${jobId}/applications`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       })
       setApplications(response.data)
@@ -147,7 +147,7 @@ const RecruiterDashboard = () => {
       const app = allApplications.find(a => a._id === appId) || applications.find(a => a._id === appId) || receivedApplications.find(a => a._id === appId)
       const jobId = app ? app.job._id : selectedJob
 
-      await axios.put(`http://localhost:5000/api/jobs/${jobId}/applications/${appId}`, {
+      await axios.put(`${import.meta.env.VITE_API_URL}/api/jobs/${jobId}/applications/${appId}`, {
         status,
         rejectionReason
       }, {
@@ -478,7 +478,7 @@ const RecruiterDashboard = () => {
                           </div>
                           {app.resume && (
                             <a
-                              href={`http://localhost:5000/${app.resume}`}
+                              href={ `${import.meta.env.VITE_API_URL}/${app.resume}`}
                               target="_blank"
                               rel="noopener noreferrer"
                               className="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium"
@@ -544,7 +544,7 @@ const RecruiterDashboard = () => {
                           </div>
                           {app.resume && (
                             <a
-                              href={`http://localhost:5000/${app.resume}`}
+                              href={ `${import.meta.env.VITE_API_URL}/${app.resume}`}
                               target="_blank"
                               rel="noopener noreferrer"
                               className="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium"

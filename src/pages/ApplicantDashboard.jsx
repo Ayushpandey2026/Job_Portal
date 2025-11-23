@@ -29,7 +29,7 @@ const ApplicantDashboard = () => {
 
   const fetchApplications = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/applications/my-applications', {
+      const response = await axios.get( `${import.meta.env.VITE_API_URL}/api/applications/my-applications`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       })
       setApplications(response.data)
@@ -51,7 +51,7 @@ const ApplicantDashboard = () => {
 
   const fetchResumeScore = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/resume/score', {
+      const response = await axios.get( `${import.meta.env.VITE_API_URL}/api/resume/score`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       })
       setResumeScore(response.data.score)
@@ -63,7 +63,7 @@ const ApplicantDashboard = () => {
 
   const fetchJobs = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/jobs', { params: jobFilters })
+      const response = await axios.get( `${import.meta.env.VITE_API_URL}/api/jobs`, { params: jobFilters })
       setJobs(response.data)
     } catch (error) {
       console.error('Error fetching jobs:', error)

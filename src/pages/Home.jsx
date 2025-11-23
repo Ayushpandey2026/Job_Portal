@@ -24,7 +24,7 @@ const Home = () => {
 
   const fetchJobs = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/jobs', { params: filters })
+      const response = await axios.get( `${import.meta.env.VITE_API_URL}/api/jobs`, { params: filters })
       setJobs(response.data)
     } catch (error) {
       console.error('Error fetching jobs:', error)
