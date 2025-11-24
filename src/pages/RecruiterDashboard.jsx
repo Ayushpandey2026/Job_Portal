@@ -49,29 +49,35 @@ const RecruiterDashboard = () => {
     }
   }
 
-  const fetchAllApplications = async () => {
-    try {
-      const params = filterScore ? { minScore: filterScore } : {}
-      const response = await axios.get( `${import.meta.env.VITE_API_URL}/api/jobs/my-applications`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
-        params
-      })
-      setAllApplications(response.data)
-    } catch (error) {
-      console.error('Error fetching all applications:', error)
-    }
-  }
-
-  const fetchReceivedApplications = async () => {
-    try {
-      const response = await axios.get( `${import.meta.env.VITE_API_URL}/api/jobs/my-applications`, {
+ const fetchAllApplications = async () => {
+  try {
+    const response = await axios.get(
+      `${import.meta.env.VITE_API_URL}/api/applications/my-applications`,
+      {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-      })
-      setReceivedApplications(response.data)
-    } catch (error) {
-      console.error('Error fetching received applications:', error)
-    }
+      }
+    )
+    setAllApplications(response.data)
+  } catch (error) {
+    console.error('Error fetching applications:', error)
   }
+}
+
+
+ const fetchReceivedApplications = async () => {
+  try {
+    const response = await axios.get(
+      `${import.meta.env.VITE_API_URL}/api/applications/all-applications`,
+      {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+      }
+    )
+    setReceivedApplications(response.data)
+  } catch (error) {
+    console.error('Error fetching received applications:', error)
+  }
+}
+
 
   const fetchSelectedApplications = async () => {
     try {
@@ -130,9 +136,10 @@ const RecruiterDashboard = () => {
 
   const viewApplications = async (jobId) => {
     try {
-      const response = await axios.get( `${import.meta.env.VITE_API_URL}/api/jobs/${jobId}/applications`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-      })
+     await axios.get(`${import.meta.env.VITE_API_URL}/api/jobs/${jobId}/applications`, {
+  headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
+})
+
       setApplications(response.data)
       setSelectedJob(jobId)
       setShowApplications(true)
