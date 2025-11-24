@@ -134,19 +134,42 @@ const RecruiterDashboard = () => {
   const [selectedJob, setSelectedJob] = useState(null)
   const [showApplications, setShowApplications] = useState(false)
 
-  const viewApplications = async (jobId) => {
-    try {
-     await axios.get(`${import.meta.env.VITE_API_URL}/api/jobs/${jobId}/applications`, {
-  headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
-})
+//   const viewApplications = async (jobId) => {
+//     try {
+//      await axios.get(`${import.meta.env.VITE_API_URL}/api/jobs/${jobId}/applications`, {
+//   headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
+// })
 
-      setApplications(response.data)
+//       setApplications(response.data)
+//       setSelectedJob(jobId)
+//       setShowApplications(true)
+//     } catch (error) {
+//       console.error('Error fetching applications:', error)
+//     }
+//   }
+
+
+
+const viewApplications = async (jobId) => {
+  try {
+    const response = await axios.get(
+      `${import.meta.env.VITE_API_URL}/api/jobs/${jobId}/applications`,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
+    );
+
+     setApplications(response.data)
       setSelectedJob(jobId)
       setShowApplications(true)
     } catch (error) {
       console.error('Error fetching applications:', error)
     }
   }
+
+
 
   const updateApplicationStatus = async (appId, status, rejectionReason = '') => {
     try {
@@ -434,12 +457,12 @@ const RecruiterDashboard = () => {
                         </span>
                       </div>
                     </div>
-                    <button
+                   <button
                       onClick={() => viewApplications(job._id)}
-                      className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-3 rounded-lg hover:from-blue-700 hover:to-indigo-700 transition-all font-medium shadow-md"
-                    >
-                      View Applications ({job.applications?.length || 0})
-                    </button>
+                           className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                              >
+                              View Applications
+                     </button>
                   </div>
                 ))}
               </div>
