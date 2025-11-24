@@ -360,7 +360,7 @@ const JobDetails = () => {
             </div>
           </div>
 
-          {/* Job Meta */}
+          {/* Job Meta section */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-6">
             <div className="bg-blue-50 rounded-lg p-4 text-center">
               <div className="text-blue-600 text-2xl mb-2">📍</div>
@@ -395,7 +395,7 @@ const JobDetails = () => {
           <p className="text-gray-700 text-lg leading-relaxed">{job.description}</p>
         </div>
 
-        {/* Requirements */}
+        {/* Requirements section  */}
         <div className="bg-white rounded-xl shadow-lg p-8 mb-8 border border-gray-200">
           <h2 className="text-3xl font-bold text-gray-900 mb-6 flex items-center">
             <span className="mr-3">🎯</span>Requirements & Constraints
@@ -403,7 +403,7 @@ const JobDetails = () => {
           <p className="text-gray-700 text-lg leading-relaxed">{job.constraints}</p>
         </div>
 
-        {/* Apply Section */}
+        {/* Apply Section h*/}
         <div className="bg-white rounded-xl shadow-lg p-8 border border-gray-200">
           <h2 className="text-3xl font-bold text-gray-900 mb-6 flex items-center">
             <span className="mr-3">🚀</span>Apply for this Position
