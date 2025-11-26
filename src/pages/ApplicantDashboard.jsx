@@ -34,6 +34,14 @@ const ApplicantDashboard = () => {
       })
       setApplications(response.data)
 
+      // GET /api/applications/my-applications
+const myApplications = await Application.find({ applicant: req.user._id })
+  .populate('job')
+  .populate('applicant'); // optional
+
+ res.json(myApplications);
+
+
       // Group applications by category
       const grouped = response.data.reduce((acc, app) => {
         const category = app.job.category || 'Other'
@@ -89,6 +97,8 @@ const ApplicantDashboard = () => {
       default: return '⏳'
     }
   }
+
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">

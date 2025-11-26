@@ -1,7 +1,7 @@
- 
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
+import Swal from 'sweetalert2'
 import { useAuth } from '../contexts/AuthContext'
 
 const RecruiterDashboard = () => {
@@ -40,50 +40,54 @@ const RecruiterDashboard = () => {
 
   const fetchJobs = async () => {
     try {
-      const response = await axios.get( `${import.meta.env.VITE_API_URL}/api/jobs`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-      })
+      const response = await axios.get(
+        `${import.meta.env.VITE_API_URL}/api/jobs`,
+        {
+          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+        }
+      )
       setJobs(response.data)
     } catch (error) {
       console.error('Error fetching jobs:', error)
     }
   }
 
- const fetchAllApplications = async () => {
-  try {
-    const response = await axios.get(
-      `${import.meta.env.VITE_API_URL}/api/applications/my-applications`,
-      {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-      }
-    )
-    setAllApplications(response.data)
-  } catch (error) {
-    console.error('Error fetching applications:', error)
+  const fetchAllApplications = async () => {
+    try {
+      const response = await axios.get(
+        `${import.meta.env.VITE_API_URL}/api/applications/my-applications`,
+        {
+          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+        }
+      )
+      setAllApplications(response.data)
+    } catch (error) {
+      console.error('Error fetching applications:', error)
+    }
   }
-}
 
-
- const fetchReceivedApplications = async () => {
-  try {
-    const response = await axios.get(
-      `${import.meta.env.VITE_API_URL}/api/applications/all-applications`,
-      {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-      }
-    )
-    setReceivedApplications(response.data)
-  } catch (error) {
-    console.error('Error fetching received applications:', error)
+  const fetchReceivedApplications = async () => {
+    try {
+      const response = await axios.get(
+        `${import.meta.env.VITE_API_URL}/api/applications/all-applications`,
+        {
+          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+        }
+      )
+      setReceivedApplications(response.data)
+    } catch (error) {
+      console.error('Error fetching received applications:', error)
+    }
   }
-}
-
 
   const fetchSelectedApplications = async () => {
     try {
-      const response = await axios.get( `${import.meta.env.VITE_API_URL}/api/jobs/my-selected-applications`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-      })
+      const response = await axios.get(
+        `${import.meta.env.VITE_API_URL}/api/jobs/my-selected-applications`,
+        {
+          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+        }
+      )
       setSelectedApplications(response.data)
     } catch (error) {
       console.error('Error fetching selected applications:', error)
@@ -109,9 +113,13 @@ const RecruiterDashboard = () => {
   const handleSubmit = async (e) => {
     e.preventDefault()
     try {
-      await axios.post( `${import.meta.env.VITE_API_URL}/api/jobs`, formData, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-      })
+      await axios.post(
+        `${import.meta.env.VITE_API_URL}/api/jobs`,
+        formData,
+        {
+          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+        }
+      )
       setShowCreateForm(false)
       setFormData({
         title: '',
@@ -134,34 +142,15 @@ const RecruiterDashboard = () => {
   const [selectedJob, setSelectedJob] = useState(null)
   const [showApplications, setShowApplications] = useState(false)
 
-//   const viewApplications = async (jobId) => {
-//     try {
-//      await axios.get(`${import.meta.env.VITE_API_URL}/api/jobs/${jobId}/applications`, {
-//   headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
-// })
-
-//       setApplications(response.data)
-//       setSelectedJob(jobId)
-//       setShowApplications(true)
-//     } catch (error) {
-//       console.error('Error fetching applications:', error)
-//     }
-//   }
-
-
-
-const viewApplications = async (jobId) => {
-  try {
-    const response = await axios.get(
-      `${import.meta.env.VITE_API_URL}/api/jobs/${jobId}/applications`,
-      {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      }
-    );
-
-     setApplications(response.data)
+  const viewApplications = async (jobId) => {
+    try {
+      const response = await axios.get(
+        `${import.meta.env.VITE_API_URL}/api/jobs/${jobId}/applications`,
+        {
+          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+        }
+      )
+      setApplications(response.data)
       setSelectedJob(jobId)
       setShowApplications(true)
     } catch (error) {
@@ -169,29 +158,87 @@ const viewApplications = async (jobId) => {
     }
   }
 
+ const updateApplicationStatus = async (appId, status, rejectionReason = '') => {
+  try {
+    const app =
+      allApplications.find(a => a._id === appId) ||
+      applications.find(a => a._id === appId) ||
+      receivedApplications.find(a => a._id === appId);
 
+    const jobId = app?.job?._id;
 
-  const updateApplicationStatus = async (appId, status, rejectionReason = '') => {
-    try {
-      // Find the application to get jobId
-      const app = allApplications.find(a => a._id === appId) || applications.find(a => a._id === appId) || receivedApplications.find(a => a._id === appId)
-      const jobId = app ? app.job._id : selectedJob
-
-      await axios.put(`${import.meta.env.VITE_API_URL}/api/jobs/${jobId}/applications/${appId}`, {
-        status,
-        rejectionReason
-      }, {
+    const response = await axios.put(
+      `${import.meta.env.VITE_API_URL}/api/applications/${jobId}/applications/${appId}`,
+      { status, rejectionReason },
+      {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-      })
-      // Refresh all data
-      fetchAllApplications()
-      fetchReceivedApplications()
-      fetchSelectedApplications()
-      if (showApplications) viewApplications(selectedJob)
-    } catch (error) {
-      console.error('Error updating application:', error)
+      }
+    );
+
+    // 🔥 Decrease openings instantly in UI
+    if (status === "selected") {
+      setJobs((prev) =>
+        prev.map((job) =>
+          job._id === jobId
+            ? { ...job, openings: Math.max(0, job.openings - 1) }
+            : job
+        )
+      );
     }
+
+    // Refresh all application lists
+    fetchAllApplications();
+    fetchReceivedApplications();
+    fetchSelectedApplications();
+
+    if (showApplications) viewApplications(jobId);
+
+    Swal.fire("Success", `Application marked as ${status}`, "success");
+
+  } catch (error) {
+    console.error(error);
+    Swal.fire("Error", "Could not update status", "error");
   }
+};
+
+
+  const openConfirmSelect = (app) => {
+    Swal.fire({
+      title: 'Confirm Selection',
+      text: `Are you sure you want to select ${app.applicant.name} for the job ${app.job.title}?`,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#22c55e',
+      cancelButtonColor: '#ef4444',
+      confirmButtonText: 'Yes, Select'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        confirmSelect(app)
+      }
+    })
+  }
+
+  const confirmSelect = (app) => {
+    updateApplicationStatus(app._id, 'selected')
+  }
+
+
+  const openRejectPopup = (app) => {
+  Swal.fire({
+    title: "Reject Application",
+    input: "text",
+    inputLabel: "Reason for rejection",
+    inputPlaceholder: "Enter reason...",
+    showCancelButton: true,
+    confirmButtonText: "Reject",
+    confirmButtonColor: "#ef4444"
+  }).then((result) => {
+    if (result.isConfirmed && result.value) {
+      updateApplicationStatus(app._id, "rejected", result.value);
+    }
+  });
+};
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
@@ -441,6 +488,41 @@ const viewApplications = async (jobId) => {
                 </div>
               )}
 
+              {showApplications && selectedJob && (
+                <div className="bg-white rounded-lg shadow-lg p-6 mt-8 border border-gray-200">
+                  <div className="flex justify-between items-center mb-6">
+                    <h2 className="text-2xl font-bold text-gray-900">
+                      Applications for {jobs.find(job => job._id === selectedJob)?.title || 'Selected Job'}
+                    </h2>
+                    <button
+                      onClick={() => setShowApplications(false)}
+                      className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-all font-medium"
+                    >
+                      Close
+                    </button>
+                  </div>
+                  {applications.length === 0 ? (
+                    <p className="text-gray-600">No applications for this job yet.</p>
+                  ) : (
+                    <div className="space-y-4 max-h-96 overflow-y-auto">
+                      {applications.map(app => (
+                        <div key={app._id} className="bg-gray-50 rounded-lg p-4 shadow-sm border border-gray-300">
+                          <h3 className="text-lg font-semibold text-gray-900">{app.applicant.name}</h3>
+                          <p className="text-gray-700 mb-1">{app.applicant.email}</p>
+                          <p className="text-gray-600 mb-1">Status: <span className={`font-medium ${
+                            app.status === 'selected' ? 'text-green-600' :
+                            app.status === 'rejected' ? 'text-red-600' :
+                            'text-yellow-600'
+                          }`}>{app.status}</span></p>
+                          <p className="text-gray-600">ATS Score: {app.atsScore}</p>
+                          <p className="text-gray-600">Applied on: {new Date(app.appliedAt).toLocaleDateString()}</p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {jobs.map(job => (
                   <div key={job._id} className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all transform hover:scale-105 border border-gray-200">
@@ -491,71 +573,105 @@ const viewApplications = async (jobId) => {
                 </button>
               </div>
 
-              {/* All Applications Section */}
-              <div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-6">All Applications</h3>
-                <div className="space-y-4 max-h-96 overflow-y-auto">
-                  {allApplications.map(app => (
-                    <div key={app._id} className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all border border-gray-200">
-                      <div className="flex justify-between items-start mb-4">
-                        <div className="flex-1">
-                          <h4 className="text-xl font-bold text-gray-900 mb-1">{app.applicant.name}</h4>
-                          <p className="text-gray-600 mb-2">{app.applicant.email}</p>
-                          <div className="flex items-center text-sm text-gray-500 mb-2">
-                            <span className="mr-4">📅 {new Date(app.appliedAt).toLocaleDateString()}</span>
-                            <span className="mr-4">🎯 ATS: {app.atsScore}/100</span>
-                            <span>🏢 {app.job.title} at {app.job.company}</span>
-                          </div>
-                          {app.resume && (
-                            <a
-                              href={ `${import.meta.env.VITE_API_URL}/${app.resume}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium"
-                            >
-                              📄 View Resume
-                            </a>
-                          )}
-                        </div>
-                        <div className="flex flex-col items-end space-y-2">
-                          <span className={`px-4 py-2 rounded-full text-sm font-bold text-white ${
-                            app.status === 'selected' ? 'bg-green-500' :
-                            app.status === 'rejected' ? 'bg-red-500' :
-                            'bg-yellow-500'
-                          }`}>
-                            {app.status}
-                          </span>
-                          {app.status === 'pending' && (
-                            <div className="flex space-x-2">
-                              <button
-                                onClick={() => updateApplicationStatus(app._id, 'selected')}
-                                className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition-all text-sm"
-                              >
-                                Select
-                              </button>
-                              <button
-                                onClick={() => {
-                                  const reason = prompt('Rejection reason:')
-                                  if (reason) updateApplicationStatus(app._id, 'rejected', reason)
-                                }}
-                                className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition-all text-sm"
-                              >
-                                Reject
-                              </button>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                      {app.rejectionReason && (
-                        <div className="bg-red-50 border border-red-200 rounded-lg p-4 mt-4">
-                          <div className="text-red-700 font-medium mb-1">Rejection Reason:</div>
-                          <div className="text-red-600">{app.rejectionReason}</div>
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
+              {/* ======================= */}
+{/*   APPLICATIONS TAB UI   */}
+{/* ======================= */}
+
+<div className="p-6">
+  <h2 className="text-3xl font-bold mb-6 text-gray-900">All Applications</h2>
+
+  {receivedApplications.length === 0 ? (
+    <p className="text-gray-500 text-lg">No applications yet.</p>
+  ) : (
+    <div className="space-y-6 max-h-[75vh] overflow-y-auto pr-3">
+
+      {receivedApplications.map((app) => (
+        <div
+          key={app._id}
+          className="bg-white border shadow-md rounded-xl p-6 hover:shadow-lg transition-all"
+        >
+          {/* HEADER ROW */}
+          <div className="flex justify-between items-start w-full">
+
+            {/* LEFT: Applicant Info */}
+            <div className="flex-1">
+              <h3 className="text-xl font-bold text-gray-900">{app.applicant.name}</h3>
+              <p className="text-gray-600 mb-1">{app.applicant.email}</p>
+
+              {/* Meta Info */}
+              <div className="text-sm text-gray-500 space-x-4 mt-1">
+                <span>📅 Applied: {new Date(app.appliedAt).toLocaleDateString()}</span>
+                <span>🎯 ATS: {app.atsScore}/100</span>
+                <span>🏢 Job: {app.job.title}</span>
               </div>
+
+              {/* Resume */}
+              {app.resume && (
+                <a
+                  href={`${import.meta.env.VITE_API_URL}/${app.resume}`}
+                  target="_blank"
+                  className="inline-flex mt-3 text-blue-600 hover:text-blue-800 font-medium"
+                >
+                  📄 View Resume
+                </a>
+              )}
+            </div>
+
+            {/* RIGHT: STATUS */}
+            <span
+              className={`px-4 py-2 rounded-full text-sm font-bold text-white ${
+                app.status === "selected"
+                  ? "bg-green-500"
+                  : app.status === "rejected"
+                  ? "bg-red-500"
+                  : "bg-yellow-500"
+              }`}
+            >
+              {app.status.toUpperCase()}
+            </span>
+          </div>
+
+          {/* ACTION BUTTONS */}
+          {app.status === "pending" && (
+            <div className="flex gap-4 mt-6">
+
+              {/* SELECT BUTTON */}
+              <button
+                disabled={app.job.openings === 0}
+                onClick={() => openConfirmSelect(app)}
+                className={`px-5 py-2 rounded-lg text-white font-semibold transition ${
+                  app.job.openings === 0
+                    ? "bg-gray-400 cursor-not-allowed"
+                    : "bg-green-600 hover:bg-green-700"
+                }`}
+              >
+                {app.job.openings === 0 ? "No Openings" : "Select"}
+              </button>
+
+              {/* REJECT BUTTON */}
+              <button
+                onClick={() => openRejectPopup(app)}
+                className="px-5 py-2 bg-red-600 text-white rounded-lg font-semibold hover:bg-red-700 transition"
+              >
+                Reject
+              </button>
+
+            </div>
+          )}
+
+          {/* REJECTION REASON */}
+          {app.rejectionReason && (
+            <div className="mt-4 bg-red-50 border border-red-200 text-red-700 p-4 rounded-lg">
+              <p className="font-semibold">Rejection Reason:</p>
+              <p>{app.rejectionReason}</p>
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
+  )}
+</div>
+
 
               {/* Selected Applications Section */}
               <div>
@@ -574,7 +690,7 @@ const viewApplications = async (jobId) => {
                           </div>
                           {app.resume && (
                             <a
-                              href={ `${import.meta.env.VITE_API_URL}/${app.resume}`}
+                              href={`${import.meta.env.VITE_API_URL}/${app.resume}`}
                               target="_blank"
                               rel="noopener noreferrer"
                               className="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium"
@@ -584,7 +700,7 @@ const viewApplications = async (jobId) => {
                           )}
                         </div>
                         <div className="flex flex-col items-end space-y-2">
-                          <span className={`px-4 py-2 rounded-full text-sm font-bold text-white bg-green-500`}>
+                          <span className="px-4 py-2 rounded-full text-sm font-bold text-white bg-green-500">
                             selected
                           </span>
                         </div>
@@ -596,84 +712,6 @@ const viewApplications = async (jobId) => {
             </div>
           )}
         </div>
-
-        {/* Modal for Applications */}
-        {showApplications && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-xl shadow-2xl p-8 max-w-5xl w-full max-h-[90vh] overflow-y-auto">
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="text-3xl font-bold text-gray-900">Job Applications</h2>
-                <button
-                  onClick={() => setShowApplications(false)}
-                  className="text-gray-500 hover:text-gray-700 text-3xl font-light"
-                >
-                  ×
-                </button>
-              </div>
-
-              <div className="space-y-6">
-                {applications.map(app => (
-                  <div key={app._id} className="bg-gray-50 rounded-xl p-6 border border-gray-200">
-                    <div className="flex justify-between items-start mb-4">
-                      <div className="flex-1">
-                        <h4 className="text-xl font-bold text-gray-900 mb-1">{app.applicant.name}</h4>
-                        <p className="text-gray-600 mb-2">{app.applicant.email}</p>
-                        <div className="flex items-center text-sm text-gray-500 mb-2">
-                          <span className="mr-4">📅 {new Date(app.appliedAt).toLocaleDateString()}</span>
-                          <span>🎯 ATS: {app.atsScore}/100</span>
-                        </div>
-                        {app.resume && (
-                          <a
-                            href={app.resume}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium"
-                          >
-                            📄 View Resume
-                          </a>
-                        )}
-                      </div>
-                      <div className="flex flex-col items-end space-y-2">
-                        <span className={`px-4 py-2 rounded-full text-sm font-bold text-white ${
-                          app.status === 'selected' ? 'bg-green-500' :
-                          app.status === 'rejected' ? 'bg-red-500' :
-                          'bg-yellow-500'
-                        }`}>
-                          {app.status}
-                        </span>
-                        {app.status === 'pending' && (
-                          <div className="flex space-x-2">
-                            <button
-                              onClick={() => updateApplicationStatus(app._id, 'selected')}
-                              className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition-all text-sm"
-                            >
-                              Select
-                            </button>
-                            <button
-                              onClick={() => {
-                                const reason = prompt('Rejection reason:')
-                                if (reason) updateApplicationStatus(app._id, 'rejected', reason)
-                              }}
-                              className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition-all text-sm"
-                            >
-                              Reject
-                            </button>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                    {app.rejectionReason && (
-                      <div className="bg-red-50 border border-red-200 rounded-lg p-4 mt-4">
-                        <div className="text-red-700 font-medium mb-1">Rejection Reason:</div>
-                        <div className="text-red-600">{app.rejectionReason}</div>
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
       </div>
     </div>
   )
