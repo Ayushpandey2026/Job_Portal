@@ -158,48 +158,65 @@ const RecruiterDashboard = () => {
     }
   }
 
- const updateApplicationStatus = async (appId, status, rejectionReason = '') => {
+//  const updateApplicationStatus = async (appId, status, rejectionReason = '') => {
+//   try {
+//     const app =
+//       allApplications.find(a => a._id === appId) ||
+//       applications.find(a => a._id === appId) ||
+//       receivedApplications.find(a => a._id === appId);
+
+//     const jobId = app?.job?._id;
+
+//     const response = await axios.put(
+//       `${import.meta.env.VITE_API_URL}/api/applications/${jobId}/applications/${appId}`,
+//       { status, rejectionReason },
+//       {
+//         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+//       }
+//     );
+
+//     // 🔥 Decrease openings instantly in UI
+//     if (status === "selected") {
+//       setJobs((prev) =>
+//         prev.map((job) =>
+//           job._id === jobId
+//             ? { ...job, openings: Math.max(0, job.openings - 1) }
+//             : job
+//         )
+//       );
+//     }
+
+//     // Refresh all application lists
+//     fetchAllApplications();
+//     fetchReceivedApplications();
+//     fetchSelectedApplications();
+
+//     if (showApplications) viewApplications(jobId);
+
+//     Swal.fire("Success", `Application marked as ${status}`, "success");
+
+//   } catch (error) {
+//     console.error(error);
+//     Swal.fire("Error", "Could not update status", "error");
+//   }
+// };
+
+
+// same as above 
+const updateApplicationStatus = async (appId, status, reason='') => {
   try {
-    const app =
-      allApplications.find(a => a._id === appId) ||
-      applications.find(a => a._id === appId) ||
-      receivedApplications.find(a => a._id === appId);
-
-    const jobId = app?.job?._id;
-
-    const response = await axios.put(
-      `${import.meta.env.VITE_API_URL}/api/applications/${jobId}/applications/${appId}`,
-      { status, rejectionReason },
-      {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-      }
-    );
-
-    // 🔥 Decrease openings instantly in UI
-    if (status === "selected") {
-      setJobs((prev) =>
-        prev.map((job) =>
-          job._id === jobId
-            ? { ...job, openings: Math.max(0, job.openings - 1) }
-            : job
-        )
-      );
-    }
-
-    // Refresh all application lists
-    fetchAllApplications();
-    fetchReceivedApplications();
-    fetchSelectedApplications();
-
-    if (showApplications) viewApplications(jobId);
-
-    Swal.fire("Success", `Application marked as ${status}`, "success");
-
-  } catch (error) {
-    console.error(error);
-    Swal.fire("Error", "Could not update status", "error");
+    const res = await axios.patch(
+      `${import.meta.env.VITE_API_URL}/api/applications/${appId}/status`,
+      { status, rejectionReason: reason },
+      { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
+    )
+    toast.success(res.data.message)
+    fetchApplicationsForJob(res.data.application.job._id) // Refresh applications
+  } catch (err) {
+    toast.error(err.response?.data?.message || 'Error updating status')
   }
-};
+}
+
 
 
   const openConfirmSelect = (app) => {
@@ -238,6 +255,36 @@ const RecruiterDashboard = () => {
     }
   });
 };
+
+
+useEffect(() => {
+  fetchMyJobs()
+}, [])
+
+const fetchMyJobs = async () => {
+  try {
+    const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/jobs/my-jobs`, {
+      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+    })
+    setJobs(res.data)
+  } catch (err) {
+    console.error(err)
+  }
+}
+
+
+const fetchApplicationsForJob = async (jobId) => {
+  try {
+    const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/applications/job/${jobId}`, {
+      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+    })
+    setApplications(res.data)
+  } catch (err) {
+    console.error(err)
+  }
+}
+
+
 
 
   return (

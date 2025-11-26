@@ -27,35 +27,29 @@ const ApplicantDashboard = () => {
     fetchJobs()
   }, [jobFilters])
 
-  const fetchApplications = async () => {
-    try {
-      const response = await axios.get( `${import.meta.env.VITE_API_URL}/api/applications/my-applications`, {
+ const fetchApplications = async () => {
+  try {
+    const response = await axios.get(
+      `${import.meta.env.VITE_API_URL}/api/applications/my-applications`,
+      {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-      })
-      setApplications(response.data)
+      }
+    );
 
-      // GET /api/applications/my-applications
-const myApplications = await Application.find({ applicant: req.user._id })
-  .populate('job')
-  .populate('applicant'); // optional
+    setApplications(response.data);
 
- res.json(myApplications);
+    const grouped = response.data.reduce((acc, app) => {
+      const category = app.job.category || 'Other';
+      if (!acc[category]) acc[category] = [];
+      acc[category].push(app);
+      return acc;
+    }, {});
 
-
-      // Group applications by category
-      const grouped = response.data.reduce((acc, app) => {
-        const category = app.job.category || 'Other'
-        if (!acc[category]) {
-          acc[category] = []
-        }
-        acc[category].push(app)
-        return acc
-      }, {})
-      setApplicationsByCategory(grouped)
-    } catch (error) {
-      console.error('Error fetching applications:', error)
-    }
+    setApplicationsByCategory(grouped);
+  } catch (error) {
+    console.error('Error fetching applications:', error);
   }
+};
 
   const fetchResumeScore = async () => {
     try {
@@ -238,12 +232,16 @@ const myApplications = await Application.find({ applicant: req.user._id })
                   <div className="text-center py-12 bg-gray-50 rounded-xl">
                     <div className="text-6xl mb-4">📭</div>
                     <p className="text-gray-600 text-lg">No applications yet. Start applying to jobs!</p>
-                    <Link
-                      to="/applicant"
-                      className="inline-block mt-4 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-all font-medium"
-                    >
-                      Browse Jobs
-                    </Link>
+                    <button
+              onClick={() => setActiveTab('jobs')}
+              className={`px-6 py-3 rounded-lg font-medium transition-all transform hover:scale-105 ${
+                activeTab === 'jobs'
+                  ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              🔍 Browse Jobs
+            </button>
                   </div>
                 ) : (
                   <div className="space-y-4">

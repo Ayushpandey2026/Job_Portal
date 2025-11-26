@@ -78,7 +78,8 @@ const Register = () => {
               placeholder="+1 (555) 123-4567"
             />
           </div>
-          <div className="mb-6">
+
+          {/* <div className="mb-6">
             <label className="block text-gray-700 mb-2 font-medium">Role</label>
             <select
               name="role"
@@ -89,7 +90,8 @@ const Register = () => {
               <option value="applicant">Applicant</option>
               <option value="recruiter">Recruiter</option>
             </select>
-          </div>
+          </div> */}
+
           <button
             type="submit"
             className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-all font-medium"
