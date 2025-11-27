@@ -225,7 +225,7 @@ const ApplicantDashboard = () => {
                 </div>
               </div>
 
-              {/* Recent Applications */}
+              {/* Recent Applications  section */}
               <div>
                 <h3 className="text-2xl font-bold text-gray-900 mb-6">Recent Applications</h3>
                 {applications.slice(0, 3).length === 0 ? (
