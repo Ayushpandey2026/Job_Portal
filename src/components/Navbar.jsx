@@ -17,7 +17,7 @@ const Navbar = () => {
       <div className="container mx-auto flex justify-between items-center">
         {/* 🔹 Logo / Brand */}
         <Link to="/" className="text-gray-800 text-2xl font-bold">
-          <span className="text-blue-600">Job</span>Portal
+          <span className="text-blue-600">Job</span>Wallah
         </Link>
 
         {/* 🔹 Account Section */}

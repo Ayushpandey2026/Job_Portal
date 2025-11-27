@@ -52,47 +52,58 @@ const RecruiterDashboard = () => {
     }
   }
 
-  const fetchAllApplications = async () => {
-    try {
-      const response = await axios.get(
-        `${import.meta.env.VITE_API_URL}/api/applications/my-applications`,
-        {
-          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-        }
-      )
-      setAllApplications(response.data)
-    } catch (error) {
-      console.error('Error fetching applications:', error)
-    }
+  const fetchAllApplications = async (jobId) => {
+  try {
+    const res = await axios.get(
+      `${import.meta.env.VITE_API_URL}/api/jobs/${jobId}/applications`,
+      {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+      }
+    );
+
+    setAllApplications(res.data);  // UI will update
+  } catch (err) {
+    console.log(err);
+    toast.error("Unable to load applications");
   }
+};
+
 
   const fetchReceivedApplications = async () => {
     try {
       const response = await axios.get(
-        `${import.meta.env.VITE_API_URL}/api/applications/all-applications`,
+        `${import.meta.env.VITE_API_URL}/api/jobs/recruiter/all-applications`,
         {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
         }
       )
       setReceivedApplications(response.data)
+      setAllApplications(response.data)
+
     } catch (error) {
       console.error('Error fetching received applications:', error)
     }
   }
 
-  const fetchSelectedApplications = async () => {
-    try {
-      const response = await axios.get(
-        `${import.meta.env.VITE_API_URL}/api/jobs/my-selected-applications`,
-        {
-          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-        }
-      )
-      setSelectedApplications(response.data)
-    } catch (error) {
-      console.error('Error fetching selected applications:', error)
-    }
+
+
+const fetchSelectedApplications = async () => {
+  try {
+    const response = await axios.get(
+      `${import.meta.env.VITE_API_URL}/api/jobs/recruiter/all-applications`,
+      {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+      }
+    );
+
+    const selected = response.data.filter(app => app.status === "selected");
+    setSelectedApplications(selected);
+
+  } catch (error) {
+    console.error("Error fetching selected applications:", error);
   }
+};
+
 
   useEffect(() => {
     fetchAllApplications()
@@ -158,48 +169,7 @@ const RecruiterDashboard = () => {
     }
   }
 
-//  const updateApplicationStatus = async (appId, status, rejectionReason = '') => {
-//   try {
-//     const app =
-//       allApplications.find(a => a._id === appId) ||
-//       applications.find(a => a._id === appId) ||
-//       receivedApplications.find(a => a._id === appId);
 
-//     const jobId = app?.job?._id;
-
-//     const response = await axios.put(
-//       `${import.meta.env.VITE_API_URL}/api/applications/${jobId}/applications/${appId}`,
-//       { status, rejectionReason },
-//       {
-//         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-//       }
-//     );
-
-//     // 🔥 Decrease openings instantly in UI
-//     if (status === "selected") {
-//       setJobs((prev) =>
-//         prev.map((job) =>
-//           job._id === jobId
-//             ? { ...job, openings: Math.max(0, job.openings - 1) }
-//             : job
-//         )
-//       );
-//     }
-
-//     // Refresh all application lists
-//     fetchAllApplications();
-//     fetchReceivedApplications();
-//     fetchSelectedApplications();
-
-//     if (showApplications) viewApplications(jobId);
-
-//     Swal.fire("Success", `Application marked as ${status}`, "success");
-
-//   } catch (error) {
-//     console.error(error);
-//     Swal.fire("Error", "Could not update status", "error");
-//   }
-// };
 
 
 // same as above 
@@ -535,40 +505,73 @@ const fetchApplicationsForJob = async (jobId) => {
                 </div>
               )}
 
-              {showApplications && selectedJob && (
-                <div className="bg-white rounded-lg shadow-lg p-6 mt-8 border border-gray-200">
-                  <div className="flex justify-between items-center mb-6">
-                    <h2 className="text-2xl font-bold text-gray-900">
-                      Applications for {jobs.find(job => job._id === selectedJob)?.title || 'Selected Job'}
-                    </h2>
-                    <button
-                      onClick={() => setShowApplications(false)}
-                      className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-all font-medium"
-                    >
-                      Close
-                    </button>
-                  </div>
-                  {applications.length === 0 ? (
-                    <p className="text-gray-600">No applications for this job yet.</p>
-                  ) : (
-                    <div className="space-y-4 max-h-96 overflow-y-auto">
-                      {applications.map(app => (
-                        <div key={app._id} className="bg-gray-50 rounded-lg p-4 shadow-sm border border-gray-300">
-                          <h3 className="text-lg font-semibold text-gray-900">{app.applicant.name}</h3>
-                          <p className="text-gray-700 mb-1">{app.applicant.email}</p>
-                          <p className="text-gray-600 mb-1">Status: <span className={`font-medium ${
-                            app.status === 'selected' ? 'text-green-600' :
-                            app.status === 'rejected' ? 'text-red-600' :
-                            'text-yellow-600'
-                          }`}>{app.status}</span></p>
-                          <p className="text-gray-600">ATS Score: {app.atsScore}</p>
-                          <p className="text-gray-600">Applied on: {new Date(app.appliedAt).toLocaleDateString()}</p>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              )}
+             {showApplications && selectedJob && (
+  <div className="bg-white rounded-xl shadow-xl p-6 mt-8 border border-gray-200">
+    
+    {/* Header */}
+    <div className="flex justify-between items-center mb-6">
+      <h2 className="text-2xl font-bold text-gray-900 tracking-wide">
+        Applications for {jobs.find(job => job._id === selectedJob)?.title || 'Selected Job'}
+      </h2>
+
+      <button
+        onClick={() => setShowApplications(false)}
+        className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 active:scale-95 transition-all font-medium shadow-sm"
+      >
+        Close
+      </button>
+    </div>
+
+    {/* Body */}
+    {applications.length === 0 ? (
+      <p className="text-gray-600 text-center py-4 bg-gray-50 rounded-lg border border-gray-200">
+        No applications for this job yet.
+      </p>
+    ) : (
+      <div className="space-y-4 max-h-96 overflow-y-auto pr-2">
+
+        {applications.map(app => (
+          <div
+            key={app._id}
+            className="bg-gray-50 rounded-lg p-5 shadow-sm border border-gray-200 hover:shadow-md transition-all"
+          >
+            <h3 className="text-lg font-semibold text-gray-900">{app.applicant.name}</h3>
+            
+            <p className="text-gray-700 mb-1">{app.applicant.email}</p>
+
+            <p className="text-gray-700 mb-1">
+              Status:{" "}
+              <span
+                className={`font-semibold ${
+                  app.status === "selected"
+                    ? "text-green-600"
+                    : app.status === "rejected"
+                    ? "text-red-600"
+                    : "text-yellow-600"
+                }`}
+              >
+                {app.status}
+              </span>
+            </p>
+
+            <p className="text-gray-700">ATS Score: 
+              <span className="font-medium text-indigo-600 ml-1">{app.atsScore}</span>
+            </p>
+
+            <p className="text-gray-600">
+              Applied on:{" "}
+              <span className="font-medium">
+                {new Date(app.appliedAt).toLocaleDateString()}
+              </span>
+            </p>
+          </div>
+        ))}
+
+      </div>
+    )}
+  </div>
+)}
+
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {jobs.map(job => (
@@ -625,7 +628,17 @@ const fetchApplicationsForJob = async (jobId) => {
 {/* ======================= */}
 
 <div className="p-6">
-  <h2 className="text-3xl font-bold mb-6 text-gray-900">All Applications</h2>
+<h3 className="text-3xl font-bold mb-6
+    bg-gradient-to-r from-indigo-600 to-purple-600 
+    bg-clip-text text-transparent 
+    border-b-2 border-indigo-300 inline-block pb-1">
+  All Applications
+</h3>
+
+
+
+
+
 
   {receivedApplications.length === 0 ? (
     <p className="text-gray-500 text-lg">No applications yet.</p>
@@ -722,7 +735,14 @@ const fetchApplicationsForJob = async (jobId) => {
 
               {/* Selected Applications Section */}
               <div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-6">Selected Applications</h3>
+<h3 className="text-3xl font-bold mb-6
+    bg-gradient-to-r from-indigo-600 to-purple-600 
+    bg-clip-text text-transparent 
+    border-b-2 border-indigo-300 inline-block pb-1">
+  Selected Applications
+</h3>
+          
+
                 <div className="space-y-4 max-h-96 overflow-y-auto">
                   {selectedApplications.map(app => (
                     <div key={app._id} className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all border border-gray-200">
