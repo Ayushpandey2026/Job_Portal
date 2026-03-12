@@ -13,6 +13,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import RecruiterDashboard from "./pages/RecruiterDashboard";
 import ApplicantDashboard from "./pages/ApplicantDashboard";
+import ApplicantProfile from "./pages/ApplicantProfile";
 import JobDetails from "./pages/JobDetails";
 
 // Admin Components
@@ -38,7 +39,8 @@ function App() {
             {/* User Dashboards */}
             <Route path="/recruiter" element={<RecruiterDashboard />} />
             <Route path="/applicant" element={<ApplicantDashboard />} />
-            <Route path="/job/:id" element={<JobDetails />} />
+            <Route path="/applicant/profile" element={<ApplicantProfile />} />
+            <Route path="/job/:id" element={<JobDetails />} /> 
 
             {/* Admin Routes */}
             <Route

@@ -1,18 +1,29 @@
 
 
 import React, { useState, useEffect } from 'react'
-import { useParams, Link } from 'react-router-dom'
+import { useParams, Link, useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import { useAuth } from '../contexts/AuthContext'
 
 const JobDetails = () => {
   const { id } = useParams()
   const { user, token } = useAuth()
+  const navigate = useNavigate()
   const [job, setJob] = useState(null)
   const [resume, setResume] = useState(null)
   const [loading, setLoading] = useState(true)
   const [applying, setApplying] = useState(false)
   const [applicationSubmitted, setApplicationSubmitted] = useState(false)
+
+  const handleGoBack = () => {
+    if (user?.role === 'applicant') {
+      navigate('/applicant')
+    } else if (user?.role === 'recruiter') {
+      navigate('/recruiter')
+    } else {
+      navigate(-1) // Browser back
+    }
+  }
 
   // -------------------------------
   // FIXED ASYNC LOADING
@@ -71,7 +82,7 @@ const JobDetails = () => {
       alert('Application submitted successfully!')
     } catch (error) {
       console.error(error)
-      alert('Error submitting application')
+      alert('Already applied or an error occurred. Please try again later.')
     } finally {
       setApplying(false)
     }
@@ -98,7 +109,18 @@ const JobDetails = () => {
         {/* Header */}
         <div className="bg-white rounded-xl shadow-lg p-8 mb-8 border border-gray-200">
           <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center">
+            {/* Back Button */}
+            <button
+              onClick={handleGoBack}
+              className="flex items-center space-x-2 bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg font-medium transition-all hover:scale-105 shadow-sm md:mr-6"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+              <span className="hidden sm:inline">Back</span>
+            </button>
+
+            <div className="flex-1 flex items-center">
               <div className="w-16 h-16 bg-blue-100 rounded-xl flex items-center justify-center mr-6">
                 <span className="text-blue-600 font-bold text-2xl">
                   {job.company.charAt(0).toUpperCase()}

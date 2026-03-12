@@ -299,7 +299,8 @@ const Home = () => {
         </div>
 
         {/* Call to Action */}
-        <div className="bg-gradient-to-r from-green-500 to-teal-600 text-white rounded-xl p-12 text-center">
+
+        {!user ? (<div className="bg-gradient-to-r from-green-500 to-teal-600 text-white rounded-xl p-12 text-center">
           <h3 className="text-4xl font-bold mb-4">Ready to Take the Next Step?</h3>
           <p className="text-xl mb-8 opacity-90">
             Join thousands of professionals who found their dream jobs through our platform
@@ -311,8 +312,13 @@ const Home = () => {
             Create Your Account Today
           </Link>
         </div>
+        ):
+        (
+        <Link to="/applicant" className="bg-white text-green-600 px-8 py-4 rounded-lg font-bold text-lg hover:bg-gray-100 transition-all transform hover:scale-105 inline-block">Go to Dashboard</Link>
+        )}
       </div>
     </div>
+        
   )
 }
 

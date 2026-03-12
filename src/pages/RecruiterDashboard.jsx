@@ -2,12 +2,17 @@ import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import Swal from 'sweetalert2'
+import toast from 'react-hot-toast'
 import { useAuth } from '../contexts/AuthContext'
 
 const RecruiterDashboard = () => {
   const { user, role, loading } = useAuth()
   const navigate = useNavigate()
   const [jobs, setJobs] = useState([])
+
+  const handleGoBack = () => {
+    navigate('/')
+  }
   const [allApplications, setAllApplications] = useState([])
   const [receivedApplications, setReceivedApplications] = useState([])
   const [selectedApplications, setSelectedApplications] = useState([])
@@ -262,8 +267,21 @@ const fetchApplicationsForJob = async (jobId) => {
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white rounded-xl p-8 mb-8 shadow-lg">
-          <h1 className="text-4xl font-bold mb-2">Recruiter Dashboard</h1>
-          <p className="text-xl opacity-90">Manage your job postings and applications</p>
+          <div className="flex items-center mb-4">
+            <button
+              onClick={handleGoBack}
+              className="flex items-center space-x-2 bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white px-4 py-2 rounded-lg font-medium transition-all hover:scale-105 shadow-lg border border-white/30 mr-6"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+              <span>Back</span>
+            </button>
+            <div>
+              <h1 className="text-4xl font-bold mb-2">Recruiter Dashboard</h1>
+              <p className="text-xl opacity-90">Manage your job postings and applications</p>
+            </div>
+          </div>
         </div>
 
         {/* Navigation Tabs */}
