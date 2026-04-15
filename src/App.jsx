@@ -16,6 +16,9 @@ import ApplicantDashboard from "./pages/ApplicantDashboard";
 import ApplicantProfile from "./pages/ApplicantProfile";
 import JobDetails from "./pages/JobDetails";
 
+// ATS Component
+import ATSChecker from "./components/ATSChecker";
+
 // Admin Components
 import ProtectedAdminRoute from "./components/ProtectedAdminRoute";
 import AdminDashboard from "./pages/admin/AdminDashboard";
@@ -40,7 +43,8 @@ function App() {
             <Route path="/recruiter" element={<RecruiterDashboard />} />
             <Route path="/applicant" element={<ApplicantDashboard />} />
             <Route path="/applicant/profile" element={<ApplicantProfile />} />
-            <Route path="/job/:id" element={<JobDetails />} /> 
+            <Route path="/job/:id" element={<JobDetails />} />
+            <Route path="/applicant/ats-checker" element={<ATSChecker />} />
 
             {/* Admin Routes */}
             <Route

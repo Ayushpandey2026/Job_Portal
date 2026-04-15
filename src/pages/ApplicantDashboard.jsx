@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import axios from 'axios'
-import ResumeChecker from '../components/ResumeChecker'
+import ATSChecker from '../components/ATSChecker'
 
 const ApplicantDashboard = () => {
   const navigate = useNavigate()
@@ -24,7 +24,7 @@ const ApplicantDashboard = () => {
 
   useEffect(() => {
     fetchApplications()
-    fetchResumeScore()
+   // fetchResumeScore()
     fetchJobs()
   }, [])
 
@@ -56,17 +56,17 @@ const ApplicantDashboard = () => {
   }
 };
 
-  const fetchResumeScore = async () => {
-    try {
-      const response = await axios.get( `${import.meta.env.VITE_API_URL}/api/resume/score`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-      })
-      setResumeScore(response.data.score)
-      setSuggestions(response.data.suggestions)
-    } catch (error) {
-      console.error('Error fetching resume score:', error)
-    }
-  }
+  // const fetchResumeScore = async () => {
+  //   try {
+  //     const response = await axios.get( `${import.meta.env.VITE_API_URL}/api/resume/score`, {
+  //       headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+  //     })
+  //     setResumeScore(response.data.score*10)
+  //     setSuggestions(response.data.suggestions)
+  //   } catch (error) {
+  //     console.error('Error fetching resume score:', error)
+  //   }
+  // }
 
   const fetchJobs = async () => {
     try {
@@ -271,9 +271,9 @@ const ApplicantDashboard = () => {
                             <p className="text-gray-600 mb-2">{app.job.company}</p>
                             <div className="flex items-center text-sm text-gray-500">
                               <span className="mr-4">📅 {new Date(app.appliedAt).toLocaleDateString()}</span>
-                              {app.atsScore && (
+                              {/* {app.atsScore && (
                                 <span className="mr-4">🎯 ATS: {app.atsScore}/100</span>
-                              )}
+                              )} */}
                             </div>
                           </div>
                           <span className={`px-4 py-2 rounded-full text-sm font-bold text-white flex items-center ${getStatusColor(app.status)}`}>
@@ -326,9 +326,9 @@ const ApplicantDashboard = () => {
                             <p className="text-gray-600 mb-2">{app.job.company}</p>
                             <div className="flex items-center text-sm text-gray-500 mb-3">
                               <span className="mr-4">📅 Applied: {new Date(app.appliedAt).toLocaleDateString()}</span>
-                              {app.atsScore && (
+                              {/* {app.atsScore && (
                                 <span className="mr-4">🎯 ATS Score: {app.atsScore}/100</span>
-                              )}
+                              )} */}
                             </div>
                           </div>
                           <span className={`px-4 py-2 rounded-full text-sm font-bold text-white flex items-center ${getStatusColor(app.status)}`}>
@@ -490,7 +490,7 @@ const ApplicantDashboard = () => {
           {/* Resume Checker Tab */}
           {activeTab === 'resume-checker' && (
             <div>
-              <ResumeChecker />
+              <ATSChecker />
             </div>
           )}
         </div>

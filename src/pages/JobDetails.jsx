@@ -14,6 +14,9 @@ const JobDetails = () => {
   const [loading, setLoading] = useState(true)
   const [applying, setApplying] = useState(false)
   const [applicationSubmitted, setApplicationSubmitted] = useState(false)
+  const [simplifyingJD, setSimplifyingJD] = useState(false)
+  const [simplifiedJD, setSimplifiedJD] = useState(null)
+  const [simplifyError, setSimplifyError] = useState(null)
 
   const handleGoBack = () => {
     if (user?.role === 'applicant') {
@@ -85,6 +88,34 @@ const JobDetails = () => {
       alert('Already applied or an error occurred. Please try again later.')
     } finally {
       setApplying(false)
+    }
+  }
+
+  // Simplify JD using AI
+  const simplifyJobDescription = async () => {
+    if (!job?.description) return
+
+    setSimplifyingJD(true)
+    setSimplifyError(null)
+
+    try {
+      const response = await axios.post(
+        `${import.meta.env.VITE_API_URL}/api/jd/simplify`,
+        {
+          jobDescription: job.description
+        }
+      )
+
+      if (response.data.success) {
+        setSimplifiedJD(response.data.data)
+      } else {
+        setSimplifyError('Failed to simplify job description')
+      }
+    } catch (error) {
+      console.error('Error simplifying JD:', error)
+      setSimplifyError(error.response?.data?.message || 'Error simplifying job description')
+    } finally {
+      setSimplifyingJD(false)
     }
   }
 
@@ -166,10 +197,111 @@ const JobDetails = () => {
 
         {/* Job Description */}
         <div className="bg-white rounded-xl shadow-lg p-8 mb-8 border border-gray-200">
-          <h2 className="text-3xl font-bold text-gray-900 mb-6 flex items-center">
-            <span className="mr-3">📋</span>Job Description
-          </h2>
-          <p className="text-gray-700 text-lg leading-relaxed">{job.description}</p>
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-3xl font-bold text-gray-900 flex items-center">
+              <span className="mr-3">📋</span>Job Description
+            </h2>
+            <button
+              onClick={simplifyJobDescription}
+              disabled={simplifyingJD || simplifiedJD}
+              className={`px-4 py-2 rounded-lg font-medium transition-all flex items-center space-x-2 ${
+                simplifyingJD || simplifiedJD
+                  ? 'bg-gray-300 text-gray-600 cursor-not-allowed'
+                  : 'bg-blue-500 hover:bg-blue-600 text-white hover:scale-105'
+              }`}
+            >
+              {simplifyingJD ? (
+                <>
+                  <span className="animate-spin">⚙️</span>
+                  <span>Simplifying...</span>
+                </>
+              ) : simplifiedJD ? (
+                <>
+                  <span>✓</span>
+                  <span>Simplified</span>
+                </>
+              ) : (
+                <>
+                  <span>✨</span>
+                  <span>Simplify JD</span>
+                </>
+              )}
+            </button>
+          </div>
+
+          {simplifyError && (
+            <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6 text-red-700">
+              Error: {simplifyError}
+            </div>
+          )}
+
+          {simplifiedJD ? (
+            <div className="space-y-6">
+              {/* Simplified Text */}
+              <div className="bg-blue-50 rounded-lg p-6 border-2 border-blue-200">
+                <h3 className="text-lg font-bold text-blue-900 mb-3 flex items-center">
+                  <span className="mr-2">💡</span>Simplified Summary
+                </h3>
+                <p className="text-blue-800 leading-relaxed">{simplifiedJD.simplifiedText}</p>
+              </div>
+
+              {/* Experience Level */}
+              {simplifiedJD.experienceLevel && (
+                <div className="bg-purple-50 rounded-lg p-6 border-2 border-purple-200">
+                  <h3 className="text-lg font-bold text-purple-900 mb-3 flex items-center">
+                    <span className="mr-2">📊</span>Experience Level
+                  </h3>
+                  <p className="text-purple-800 text-lg font-semibold">{simplifiedJD.experienceLevel}</p>
+                </div>
+              )}
+
+              {/* Key Responsibilities */}
+              {simplifiedJD.keyPoints && simplifiedJD.keyPoints.length > 0 && (
+                <div className="bg-green-50 rounded-lg p-6 border-2 border-green-200">
+                  <h3 className="text-lg font-bold text-green-900 mb-4 flex items-center">
+                    <span className="mr-2">✓</span>Key Responsibilities
+                  </h3>
+                  <ul className="space-y-2">
+                    {simplifiedJD.keyPoints.map((point, idx) => (
+                      <li key={idx} className="flex items-start">
+                        <span className="text-green-600 font-bold mr-3">•</span>
+                        <span className="text-green-800">{point}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {/* Required Skills */}
+              {simplifiedJD.skills && simplifiedJD.skills.length > 0 && (
+                <div className="bg-orange-50 rounded-lg p-6 border-2 border-orange-200">
+                  <h3 className="text-lg font-bold text-orange-900 mb-4 flex items-center">
+                    <span className="mr-2">🔧</span>Required Skills
+                  </h3>
+                  <div className="flex flex-wrap gap-3">
+                    {simplifiedJD.skills.map((skill, idx) => (
+                      <span
+                        key={idx}
+                        className="bg-orange-200 text-orange-900 px-4 py-2 rounded-full font-medium text-sm"
+                      >
+                        {skill}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Reset Button */}
+              <button
+                onClick={() => setSimplifiedJD(null)}
+                className="w-full bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded-lg font-medium transition-all"
+              >
+                Show Original Description
+              </button>
+            </div>
+          ) : (
+            <p className="text-gray-700 text-lg leading-relaxed">{job.description}</p>
+          )}
         </div>
 
         {/* Requirements section  */}
